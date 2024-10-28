@@ -103,10 +103,10 @@ if len(blastx_out) >=1:
 						inter=[]
 						for c in range(0, len(conv), 3):
 							rows=[raw_counts_clean.iloc[i]['pid'],"NA","NA",uptID,conv[c].strip('\n'),conv[c+1].strip('\n'),conv[c+2].strip('\n'),"unidentified",speciesID,"NA","NA","NA"]
-							inter.concat(rows)
+							pd.concat([inter,rows])
 						inter=pd.DataFrame(inter,columns=column_names)
 		inter=inter.assign(counts=raw_counts_clean.iloc[i]['counts']/len(inter))
-		pwy_counts=pwy_counts.concat(inter,ignore_index = True,sort=False)
+		pwy_counts=pd.concat([pwy_counts,inter],ignore_index = True,sort=False)
 	
 	def get_stratified_taxa(ann_type):
 		annotation=pwy_counts.reset_index().groupby([ann_type,"speciesID"]).agg({'counts': 'sum'}).reset_index()
@@ -124,7 +124,7 @@ if len(blastx_out) >=1:
 				ann_taxa.index = ann_taxa.index + 1  # shifting index
 				ann_taxa.sort_index(inplace=True)
 				stratified_pwy=ann_taxa.groupby([ann_type]).agg({'counts': 'sum'}).reset_index()
-				ann_abd=ann_abd.concat(stratified_pwy,ignore_index = True)
+				ann_abd=pd.concat([ann_abd,stratified_pwy],ignore_index = True)
 			return ann_abd
 		else:
 			print('no pathway found\n')
