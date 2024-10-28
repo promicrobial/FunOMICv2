@@ -144,7 +144,7 @@ awk '$4 >= 20' $outdir/"functional_profiling"/${prefix}.func.out | sort -k3,3nr 
 #  -o2 $outdir/"functional_profiling"/${prefix}"_EC.csv" &>/dev/null
 
 
- get_pwy_abundance_v1.py -i $outdir/"functional_profiling"/${prefix}.func.filtered.out\
+ get_pwy_abundance_v2.py -i $outdir/"functional_profiling"/${prefix}.func.filtered.out\
  -s $protdb \
  -o1 $outdir/"functional_profiling"/${prefix}"_pwy_abundance.csv"\
  -o2 $outdir/"functional_profiling"/${prefix}"_pwyClass_abundance.csv"\
