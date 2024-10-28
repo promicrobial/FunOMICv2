@@ -24,7 +24,7 @@ option = parser.parse_args()
 q30reads = option.input_path
 coverage80 = option.output_path
 
-q30sam=pd.read_csv(q30reads,delimiter='\t', error_bad_lines=False,names=["QNAME","FLAG","RNAME","POS","MAPQ","CIGAR","RNEXT","PNEXT","TLEN","SEQ","QUAL","BT1","BT2","BT3","BT4","BT5","BT6","BT7","BT8","BT9","BT10","BT11"])
+q30sam=pd.read_csv(q30reads,delimiter='\t', on_bad_lines='skip',names=["QNAME","FLAG","RNAME","POS","MAPQ","CIGAR","RNEXT","PNEXT","TLEN","SEQ","QUAL","BT1","BT2","BT3","BT4","BT5","BT6","BT7","BT8","BT9","BT10","BT11"])
 l=[]
 len=[]
 for cigar in q30sam['CIGAR']:
