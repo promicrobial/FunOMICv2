@@ -102,9 +102,12 @@ if len(blastx_out) >=1:
 						conv=result.stdout.split('|')
 						inter=[]
 						for c in range(0, len(conv), 3):
-							rows=[raw_counts_clean.iloc[i]['pid'],"NA","NA",uptID,conv[c].strip('\n'),conv[c+1].strip('\n'),conv[c+2].strip('\n'),"unidentified",speciesID,"NA","NA","NA"]
-							pd.concat([inter,rows])
-						inter=pd.DataFrame(inter,columns=column_names)
+							if c + 3 <= len(conv):
+								rows=[raw_counts_clean.iloc[i]['pid'],"NA","NA",uptID,conv[c].strip('\n'),conv[c+1].strip('\n'),conv[c+2].strip('\n'),"unidentified",speciesID,"NA","NA","NA"]
+								pd.concat([inter,rows])
+								inter=pd.DataFrame(inter,columns=column_names)
+						else:
+							break
 		inter=inter.assign(counts=raw_counts_clean.iloc[i]['counts']/len(inter))
 		pwy_counts=pd.concat([pwy_counts,inter],ignore_index = True,sort=False)
 	
