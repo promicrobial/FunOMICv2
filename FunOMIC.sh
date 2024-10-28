@@ -69,12 +69,12 @@ fi &>/dev/null
 bowtie2 -p $threads -x $bactdb/uhgg \
 -1 $read1 \
 -2 $read2 \
--S $outdir/tmp/${prefix}_Bact.sam 2> ${outdir}/bact_decontam.log
+-S $outdir/${prefix}_Bact.sam 2> ${outdir}/bact_decontam.log
 
-samtools view -b -f 4 $outdir/tmp/${prefix}_Bact.sam > $outdir/tmp/${prefix}_noBact.bam 
+samtools view -b -f 4 $outdir/${prefix}_Bact.sam > $outdir/${prefix}_noBact.bam 
 
-samtools sort -n $outdir/tmp/${prefix}_noBact.bam -o $outdir/tmp/${prefix}_noBact_sorted.bam &>/dev/null
-samtools fastq -@ 8 $outdir/tmp/${prefix}_noBact_sorted.bam \
+samtools sort -n $outdir/${prefix}_noBact.bam -o $outdir/${prefix}_noBact_sorted.bam &>/dev/null
+samtools fastq -@ 8 $outdir/${prefix}_noBact_sorted.bam \
    -1 $outdir/${prefix}_noBact_1.fastq.gz \
    -2 $outdir/${prefix}_noBact_2.fastq.gz \
    -0 /dev/null -s /dev/null -n &>/dev/null
@@ -90,26 +90,22 @@ printf "Start taxonomic annotation for ${prefix}\n"
 bowtie2 -p $threads -x $taxadb/FunOMIC.T.v1 \
 -1 $outdir/${prefix}_noBact_1.fastq.gz \
 -2 $outdir/${prefix}_noBact_2.fastq.gz \
--S $outdir/tmp/${prefix}.sam 2> $outdir/taxonomic_profiling/log
+-S $outdir/${prefix}.sam 2> $outdir/taxonomic_profiling/log
 
 # filter hits with q-score over 30 and coverage over 80
-samtools view -Sq 30 $outdir/tmp/${prefix}.sam > $outdir/tmp/${prefix}.30.sam 
-samtools view -bSq 30 $outdir/tmp/${prefix}.sam > $outdir/tmp/${prefix}.30.bam
-samtools sort -o $outdir/tmp/${prefix}.30.sorted.bam $outdir/tmp/${prefix}.30.bam  &>/dev/null
-coverageFilter.py -i $outdir/tmp/${prefix}.30.sam -o $outdir/tmp/${prefix}.30.c80.list &>/dev/null
-samtools view $outdir/tmp/${prefix}.30.sorted.bam | grep -f $outdir/tmp/${prefix}.30.c80.list > $outdir/tmp/${prefix}.30.c80.sam
-samtools view -bt $taxadb/FunOMIC.T.v1.fasta.fai -o $outdir/tmp/${prefix}.30.c80.bam $outdir/tmp/${prefix}.30.c80.sam &>/dev/null
-samtools index $outdir/tmp/${prefix}.30.c80.bam &>/dev/null
-samtools idxstats --threads $threads $outdir/tmp/${prefix}.30.c80.bam > $outdir/tmp/${prefix}.idxstats.txt
+samtools view -Sq 30 $outdir/${prefix}.sam > $outdir/${prefix}.30.sam 
+samtools view -bSq 30 $outdir/${prefix}.sam > $outdir/${prefix}.30.bam
+samtools sort -o $outdir/${prefix}.30.sorted.bam $outdir/${prefix}.30.bam  &>/dev/null
+coverageFilter.py -i $outdir/${prefix}.30.sam -o $outdir/${prefix}.30.c80.list &>/dev/null
+samtools view $outdir/${prefix}.30.sorted.bam | grep -f $outdir/${prefix}.30.c80.list > $outdir/${prefix}.30.c80.sam
+samtools view -bt $taxadb/FunOMIC.T.v1.fasta.fai -o $outdir/${prefix}.30.c80.bam $outdir/${prefix}.30.c80.sam &>/dev/null
+samtools index $outdir/${prefix}.30.c80.bam &>/dev/null
+samtools idxstats --threads $threads $outdir/${prefix}.30.c80.bam > $outdir/${prefix}.idxstats.txt
 
 
-awk '$3 > 0' $outdir/tmp/${prefix}.idxstats.txt | sed 's/|/\t/g' | awk '{print $1,$4}' > $outdir/tmp/${prefix}"_assembly_hits.txt"
-buglist.py -i $outdir/tmp/${prefix}"_assembly_hits.txt" -t $taxadb/taxonomy.txt -o $outdir"/taxonomic_profiling"/${prefix}"_buglist_stratified.txt" &>/dev/null
+awk '$3 > 0' $outdir/${prefix}.idxstats.txt | sed 's/|/\t/g' | awk '{print $1,$4}' > $outdir/${prefix}"_assembly_hits.txt"
+buglist.py -i $outdir/${prefix}"_assembly_hits.txt" -t $taxadb/taxonomy.txt -o $outdir"/taxonomic_profiling"/${prefix}"_buglist_stratified.txt" &>/dev/null
   
-
-#### rm temporary files
-rm -r $outdir/tmp/
-
 ##############################################
 ########### FUNCTIONAL PROFILING! ############
 ##############################################
@@ -118,7 +114,7 @@ rm -r $outdir/tmp/
 printf "Starting functional annotation for ${prefix}\n"
 
 cd ${outdir}/functional_profiling
-mkdir $outdir/functional_profiling/tmp/
+mkdir $outdir/functional_profiling/
 
 zcat $outdir/${prefix}_noBact* > $outdir/functional_profiling/joined.fastq
 
